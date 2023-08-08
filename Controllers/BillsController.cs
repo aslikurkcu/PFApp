@@ -9,6 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using PFApp.Contexts;
 using PFApp.Models;
+using PFApp.DTO;
+//using System.Data.SqlClient;
+using System.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using System.Text.Json;
+
+
 
 namespace PFApp.Controllers
 {
@@ -25,31 +33,65 @@ namespace PFApp.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Bill>>> GetBills()
-        {
-            if (_dbContext.Bills == null)
-            {
-                return NotFound();
-            }
-            return await _dbContext.Bills.ToListAsync();
+        [HttpGet("getbills")]
+        public async Task<ActionResult> GetBills(int user_id){
+
+            var bills = await _dbContext.Bills
+            .Where(entry => entry.user_Id == user_id)
+            .Select(b => new BillDTO(){
+                bill_Type = b.bill_Type,
+                amount = b.amount,
+                paid = b.paid,
+                bill_id = b.bill_id
+            })
+            .ToListAsync();
+            return Ok(bills);
         }
 
-        [HttpGet("{bill_id}")]
-        public async Task<ActionResult<Bill>> GetBills(int bill_id)
-        {
-            if (_dbContext.Bills == null)
-            {
-                return NotFound();
-            }
+        [HttpPut("UpdateBill")]
+        public async Task<ActionResult> UpdateBill(JsonElement data ){
 
-            var bill = await _dbContext.Bills.FindAsync(bill_id);
-            if (bill == null)
-            {
-                return NotFound();
-            }
-            return bill;
+        int Bill_id = Convert.ToInt32(data.GetProperty("Bill_id").ToString());
+        bool Paid = Convert.ToBoolean(data.GetProperty("Paid").ToString());
+        
+        var bill = await _dbContext.Bills.FindAsync(Bill_id);
+         
+        if (bill == null)
+        {
+            return NotFound("dfghj");
+        } 
+        var parameters = new[]
+        {
+            new SqlParameter("@billId", SqlDbType.Int) { Value = bill.bill_id },
+            new SqlParameter("@isPaid", SqlDbType.Bit) { Value = Paid }
+        };
+
+        await _dbContext.Database.ExecuteSqlRawAsync("EXEC UpdateBillPaidStatus @billId, @isPaid", parameters);
+
+        return NoContent();
         }
+    
+
+    [HttpPut("InsertBill")]
+    public async Task<ActionResult> InsertBill(JsonElement data){
+
+        int user_id = Convert.ToInt32(data.GetProperty("user_id").ToString());
+        string bill_type = data.GetProperty("bill_type").ToString();
+        int amount = Convert.ToInt32(data.GetProperty("amount").ToString());
+       
+        var parameters = new[]
+        {
+            new SqlParameter("@UserId", SqlDbType.Int) { Value = user_id },
+            new SqlParameter("@BillType", SqlDbType.VarChar) { Value = bill_type},
+            new SqlParameter("@Amount", SqlDbType.Int) { Value = amount }
+        };
+
+
+        await _dbContext.Database.ExecuteSqlRawAsync("EXEC InsertBill @UserId, @BillType, @Amount", parameters);
+        
+        return Ok();
+    }
+
 
     }
 }

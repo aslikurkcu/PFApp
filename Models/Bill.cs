@@ -9,11 +9,11 @@ namespace PFApp.Models
     public class Bill
     {
         [Key]
-        public int Bill_Id { get; set; }
-        public int User_Id { get; set; }
-        public string Bill_Type { get; set; }
-        public int Amount { get; set; }
-        public Boolean Paid { get; set; }
-        public Nullable<DateTime> Payment_Date { get; set; }
+        public int bill_id { get; set; }
+        public int user_Id { get; set; }
+        public string bill_Type { get; set; }
+        public int amount { get; set; }
+        public Boolean paid { get; set; }
+        public Nullable<DateTime> payment_Date { get; set; }
     }
 }

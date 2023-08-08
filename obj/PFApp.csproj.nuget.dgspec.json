@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\aslih\\Desktop\\PFApp\\PFApp.csproj": {}
+    "C:\\Users\\aslih\\Desktop\\PFM\\PFApp\\PFApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\aslih\\Desktop\\PFApp\\PFApp.csproj": {
+    "C:\\Users\\aslih\\Desktop\\PFM\\PFApp\\PFApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\aslih\\Desktop\\PFApp\\PFApp.csproj",
+        "projectUniqueName": "C:\\Users\\aslih\\Desktop\\PFM\\PFApp\\PFApp.csproj",
         "projectName": "PFApp",
-        "projectPath": "C:\\Users\\aslih\\Desktop\\PFApp\\PFApp.csproj",
+        "projectPath": "C:\\Users\\aslih\\Desktop\\PFM\\PFApp\\PFApp.csproj",
         "packagesPath": "C:\\Users\\aslih\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\aslih\\Desktop\\PFApp\\obj\\",
+        "outputPath": "C:\\Users\\aslih\\Desktop\\PFM\\PFApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\aslih\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -76,6 +76,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.5, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
