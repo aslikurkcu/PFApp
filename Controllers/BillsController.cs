@@ -48,6 +48,25 @@ namespace PFApp.Controllers
             return Ok(bills);
         }
 
+        [HttpGet("GetPaidBills")]
+        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> GetPaidBills(int user_id){
+
+            var today = DateTime.Today;
+            var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            var expenses = await _dbContext.Bills
+            .Where(entry => entry.user_Id == user_id && entry.payment_date >= firstDayOfMonth 
+            && entry.payment_date <= lastDayOfMonth && entry.paid == true)
+            .Select(b => new ExpenseDTO(){
+                expense_type  = "bill",
+                amount = b.amount
+            })
+            .ToListAsync();
+            return Ok(expenses);
+        }
+
+
         [HttpPut("UpdateBill")]
         public async Task<ActionResult> UpdateBill(JsonElement data ){
 

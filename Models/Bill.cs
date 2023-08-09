@@ -14,6 +14,6 @@ namespace PFApp.Models
         public string bill_Type { get; set; }
         public int amount { get; set; }
         public Boolean paid { get; set; }
-        public Nullable<DateTime> payment_Date { get; set; }
+        public Nullable<DateTime> payment_date { get; set; }
     }
 }

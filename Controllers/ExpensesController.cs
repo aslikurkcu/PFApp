@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
+
 namespace PFApp.Controllers
 {
     [Route("api/[controller]")]
@@ -54,6 +55,26 @@ namespace PFApp.Controllers
 
 
 
+    [HttpGet("GetExpenses")]
+        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> GetExpenses(int user_id){
+
+            var today = DateTime.Today;
+            var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+
+            var expenses = await _dbContext.Expenses
+            .Where(entry => entry.user_id == user_id && entry.expense_date >= firstDayOfMonth 
+            && entry.expense_date <= lastDayOfMonth)
+            .Select(e => new ExpenseDTO(){
+                expense_type = e.expense_type,
+                amount = e.amount,
+            })
+            .ToListAsync();
+            return Ok(expenses);
+    }
+
+
 
 
 /* 
@@ -68,18 +89,17 @@ namespace PFApp.Controllers
         } */
 
 
-       /*  [HttpGet("getexpenses")]
-        public async Task<ActionResult> GetExpenses(int user_id)
+        /*[HttpGet("GetExpenses")]
+        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> GetExpenses(int user_id)
 {
         var parameters = new SqlParameter("@userId", SqlDbType.Int) { Value = user_id };
 
-        var expenses = await _dbContext.Expenses
-            .FromSqlRaw("EXEC GetCurrentMonthExpensesByType @userId", parameters)
-           
-            .ToListAsync();
+        // var expenses = DbContext.GetCurrentMonthExpensesByType.FromSqlRaw("EXEC GetCurrentMonthExpensesByType @userId", parameters).ToList();
+        // List<YourResultType> result = context.YourStoredProcedureName.FromSqlRaw("EXEC dbo.YourStoredProcedureName @param1, @param2", param1, param2).ToList();
+        //var expenses = _dbContext.Database.SqlQuery<string>("EXEC GetCurrentMonthExpensesByType @userId =1");
 
-        return Ok(expenses);
-} */
+        return Ok(expenses);*/
+} 
 
  /*.Select(e => new ExpenseDTO(){
                 expense_type = e.expense_type,
@@ -98,5 +118,5 @@ namespace PFApp.Controllers
             return await _dbContext.Expenses.Where(entry => entry.User_Id == user_id).ToListAsync();
         
         } */
-    }
+    
 }
