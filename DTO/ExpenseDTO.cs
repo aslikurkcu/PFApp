@@ -9,5 +9,6 @@ namespace PFApp.DTO
     {
         public string expense_type { get; set; }
         public int amount { get; set; }
+        public DateTime expense_date { get; set; }
     }
 }

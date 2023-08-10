@@ -90,5 +90,16 @@ namespace PFApp.Controllers
         
         }
 
+        [HttpGet("GetUserById")]
+        public async Task<IActionResult> GetUserById(string user_id)
+        {
+            var user = await _userManager.FindByIdAsync(user_id);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
+        }
+
     }
 }

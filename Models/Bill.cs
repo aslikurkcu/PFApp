@@ -10,7 +10,7 @@ namespace PFApp.Models
     {
         [Key]
         public int bill_id { get; set; }
-        public int user_Id { get; set; }
+        public int user_id { get; set; }
         public string bill_Type { get; set; }
         public int amount { get; set; }
         public Boolean paid { get; set; }

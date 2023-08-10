@@ -37,7 +37,7 @@ namespace PFApp.Controllers
         public async Task<ActionResult> GetBills(int user_id){
 
             var bills = await _dbContext.Bills
-            .Where(entry => entry.user_Id == user_id)
+            .Where(entry => entry.user_id == user_id)
             .Select(b => new BillDTO(){
                 bill_Type = b.bill_Type,
                 amount = b.amount,
@@ -56,7 +56,7 @@ namespace PFApp.Controllers
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
             var expenses = await _dbContext.Bills
-            .Where(entry => entry.user_Id == user_id && entry.payment_date >= firstDayOfMonth 
+            .Where(entry => entry.user_id == user_id && entry.payment_date >= firstDayOfMonth 
             && entry.payment_date <= lastDayOfMonth && entry.paid == true)
             .Select(b => new ExpenseDTO(){
                 expense_type  = "bill",
@@ -77,7 +77,7 @@ namespace PFApp.Controllers
          
         if (bill == null)
         {
-            return NotFound("dfghj");
+            return NotFound();
         } 
         var parameters = new[]
         {
@@ -110,6 +110,31 @@ namespace PFApp.Controllers
         
         return Ok();
     }
+
+
+    [HttpGet("GetPaidBillsDaily")]
+    public async Task<ActionResult<IEnumerable<int>>> GetPaidBillsDaily(int user_id){
+        
+    var today = DateTime.Today;
+    var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+    var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+    var paidBills = new List<int>();
+
+    for (DateTime date = firstDayOfMonth; date <= lastDayOfMonth; date = date.AddDays(1))
+    {
+        var totalPaidBills = await _dbContext.Bills
+            .Where(entry => entry.user_id == user_id && entry.payment_date.HasValue 
+            && entry.payment_date.Value.Date == date.Date && entry.paid == true)
+            .SumAsync(b => b.amount);
+
+        paidBills.Add(totalPaidBills);
+    }
+
+    return Ok(paidBills);
+
+    }
+
 
 
     }

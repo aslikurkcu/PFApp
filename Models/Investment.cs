@@ -9,11 +9,11 @@ namespace PFApp.Models
     public class Investment
     {
         [Key]
-        public int Invest_Id { get; set; }
-        public int User_Id { get; set; }
-        public string Invest_Type { get; set; }
-        public int Amount { get; set; }
-        public DateTime Invest_Date { get; set; }
+        public int invest_id { get; set; }
+        public int user_id { get; set; }
+        public string invest_type { get; set; }
+        public int amount { get; set; }
+        public DateTime invest_date { get; set; }
         
     }
 }
