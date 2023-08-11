@@ -16,6 +16,11 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
+using Microsoft.Data.SqlClient;
+using System.Data;
+//using System.Data.SqlClient;
+
 
 namespace PFApp.Controllers
 {
@@ -26,12 +31,14 @@ namespace PFApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly UsersContext _dbContext;
 
-        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager,IConfiguration configuration)
+        public UsersController(UserManager<User> userManager,SignInManager<User> signInManager,IConfiguration configuration, UsersContext dbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _dbContext = dbContext;
         }
 
         [HttpPost("register")]
@@ -99,6 +106,37 @@ namespace PFApp.Controllers
                 return NotFound();
 
             return Ok(user);
+        }
+
+        [HttpPut("UpdateUser")]
+        public async Task<ActionResult> UpdateUser(JsonElement data ){
+
+        string Id = data.GetProperty("Id").ToString();
+        string name = data.GetProperty("Name").ToString();
+        string email = data.GetProperty("Email").ToString();
+        string userName = data.GetProperty("UserName").ToString();
+        int income = Convert.ToInt32(data.GetProperty("Income").ToString());
+        string phoneNumber = data.GetProperty("PhoneNumber").ToString();
+        
+        var user = await _userManager.FindByIdAsync(Id);
+         
+        if (user == null)
+        {
+            return NotFound();
+        } 
+        var parameters = new[]
+        {
+            new SqlParameter("@Id", SqlDbType.Int) { Value = Id },
+            new SqlParameter("@Name", SqlDbType.NVarChar) { Value = name },
+            new SqlParameter("@Email", SqlDbType.NVarChar) { Value = email },
+            new SqlParameter("@UserName", SqlDbType.NVarChar) { Value = userName },
+            new SqlParameter("@Income", SqlDbType.Int) { Value = income },
+            new SqlParameter("@PhoneNumber", SqlDbType.NVarChar) { Value = phoneNumber }
+        };
+
+        await _dbContext.Database.ExecuteSqlRawAsync("EXEC UpdateUser @Id, @Name, @Email, @UserName, @Income, @PhoneNumber", parameters);
+
+        return NoContent();
         }
 
     }

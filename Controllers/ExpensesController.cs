@@ -91,6 +91,31 @@ namespace PFApp.Controllers
         return Ok(expenses);
     }
 
+    [HttpGet("GetExpensesMonthly")]
+    public async Task<ActionResult<List<int>>> GetExpensesYearlyMonthly(int user_id)
+    {
+        var today = DateTime.Today;
+        var startOfYear = new DateTime(today.Year, 1, 1);
+        var endOfYear = new DateTime(today.Year, 12, 31);
+
+        var yearlyTotalExpenses = new List<int>();
+
+        for (int month = 1; month <= 12; month++)
+        {
+            var firstDayOfMonth = new DateTime(today.Year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            var totalExpensesForMonth = await _dbContext.Expenses
+                .Where(entry => entry.user_id == user_id && entry.expense_date >= firstDayOfMonth && entry.expense_date <= lastDayOfMonth)
+                .SumAsync(e => e.amount);
+
+            yearlyTotalExpenses.Add(totalExpensesForMonth);
+        }
+
+        return Ok(yearlyTotalExpenses);
+    }
+
+
 
 
     }

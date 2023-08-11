@@ -15,7 +15,7 @@ namespace PFApp.Contexts
 
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> AspNetUsers { get; set; }
 
     }
 }

@@ -91,6 +91,61 @@ namespace PFApp.Controllers
     }
 
 
+    [HttpGet("GetInvestmentsDailyByType")]
+    public async Task<ActionResult<Dictionary<string, List<int>>>> GetInvestmentsDailyByType(int user_id)
+    {
+        var today = DateTime.Today;
+        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
+        var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+        var investmentTypes = new List<string> { "dollar", "euro", "XAU" };
+        var investmentsByType = new Dictionary<string, List<int>>();
+
+        foreach (var investmentType in investmentTypes)
+        {
+            var investments = new List<int>();
+
+            for (DateTime date = firstDayOfMonth; date <= lastDayOfMonth; date = date.AddDays(1))
+            {
+                var totalInvestments = await _dbContext.Investments
+                    .Where(entry => entry.user_id == user_id && entry.invest_date.Date == date.Date && entry.invest_type == investmentType)
+                    .SumAsync(i => i.amount);
+
+                investments.Add(totalInvestments);
+            }
+
+        investmentsByType.Add(investmentType, investments);
+        }
+
+    return Ok(investmentsByType);
+    }
+
+    [HttpGet("GetInvestmentsMonthly")]
+    public async Task<ActionResult<List<int>>> GetInvestmentsMonthly(int user_id)
+    {
+        var today = DateTime.Today;
+        var startOfYear = new DateTime(today.Year, 1, 1);
+        var endOfYear = new DateTime(today.Year, 12, 31);
+
+        var yearlyTotalInvestments = new List<int>();
+
+        for (DateTime month = startOfYear; month <= endOfYear; month = month.AddMonths(1))
+        {
+            var firstDayOfMonth = new DateTime(month.Year, month.Month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            var totalInvestmentsForMonth = await _dbContext.Investments
+                .Where(entry => entry.user_id == user_id && entry.invest_date >= firstDayOfMonth && entry.invest_date <= lastDayOfMonth)
+                .SumAsync(i => i.amount);
+
+            yearlyTotalInvestments.Add(totalInvestmentsForMonth);
+        }
+
+        return Ok(yearlyTotalInvestments);
+    }
+
+
+
 
 
     }
